@@ -18,8 +18,9 @@ public class Level extends JPanel implements ActionListener {
     private Points points;
     private Placar placar;
     private JogarNovamenteButton jogarNovamenteButton;
+    private GameSong gameSong;
 
-    Level(Points points, Placar placar) {
+    Level(Points points, Placar placar) throws Exception {
 
         setFocusable(true);
         setDoubleBuffered(true);
@@ -33,24 +34,22 @@ public class Level extends JPanel implements ActionListener {
 
         timer = new Timer(5, this);
         timer.start();
-
+        GameSong.playMusic();
         inicializaInimigos();
         emJogo = true;
-
         this.points = points;
         this.placar = placar;
-
     }
-
 
     //número de inimigos
     public void inicializaInimigos() {
-        int coordenadas [] = new int[40];
+        int coordenadas [] = new int[10];
         enemy1 = new ArrayList<Enemy1>();
+
     //respaw de inimigos aleatórios
         for (int i = 0; i < coordenadas.length; i++) {
-            int x = (int)(Math.random() * 8000 + 1024);
-            int y = (int)(Math.random() * 650 + 30);
+            int x = Math.max(0, (int)(Math.random() * 1000) + 1024);
+            int y = Math.max(0, (int)(Math.random() * (728 - 50) + 30));
             enemy1.add(new Enemy1(x, y));
         }
     }
@@ -83,10 +82,14 @@ public class Level extends JPanel implements ActionListener {
             g.setColor(Color.WHITE);
             g.setFont(new Font("Pixely", Font.BOLD, 20));
             g.drawString("Score Final: " + points.getValor(), 420, 514);
+            jogarNovamenteButton = new JogarNovamenteButton(placar, points);
+            add(jogarNovamenteButton);
+            repaint();
         }
 
     }
 
+    private int contador = 0;
     @Override
     public void actionPerformed(ActionEvent e) {
         player.Update();
@@ -101,13 +104,21 @@ public class Level extends JPanel implements ActionListener {
         }
 
         //assim como tiro, podemos criar um monte de inimigos
-        for (int o = 0; o < enemy1.size(); o++) {
+        for (int o = enemy1.size() - 1; o >= 0; o--) {
             Enemy1 in = enemy1.get(o);
                 if (in.eVisivel()) {
                     in.atualizarEstado();
                 }else {
                     enemy1.remove(o);
+                    o--;
                 }
+        }
+
+        contador++;
+        if (contador % 70 == 0) { // a cada 70 frames (~1s)
+            int x = (int)(Math.random() * 1000) + 1024;
+            int y = (int)(Math.random() * (728 - 50)) + 30;
+            enemy1.add(new Enemy1(x, y));
         }
 
         checarColisoes();
@@ -127,6 +138,7 @@ public class Level extends JPanel implements ActionListener {
                     player.setVisible(false);
                     tempEnemy1.setVisible(false);
                     emJogo = false;
+                    GameSong.stopMusic();
                 }
         }
         //sistema de destruição de inimigos através do tiro

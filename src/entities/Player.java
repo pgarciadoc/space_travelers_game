@@ -38,6 +38,10 @@ public class Player {
     public void Update() {
         x += dx;
         y += dy;
+
+        x = Math.max(0, Math.min(x, 1024 - 100));
+        y = Math.max(0, Math.min(y, 728 - 100));
+
     }
     //Tiro
     public void tiroSimples() {

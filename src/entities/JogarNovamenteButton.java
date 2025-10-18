@@ -1,31 +1,44 @@
 package entities;
 
 import javax.swing.*;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.ConstructorProperties;
 
 import static java.awt.AWTEventMulticaster.add;
 
-public class JogarNovamenteButton implements ActionListener {
+public class JogarNovamenteButton extends JButton implements ActionListener {
 
     private Container container;
+    private boolean emJogo;
+    private Points points;
+    private Placar placar;
+    private GameSong gameSong;
 
-    public void botaoPlayAgain() {
-        JButton jButton = new JButton("Jogar Novamente");
-        jButton.setLayout(null);
-        jButton.setBounds(385, 530, 250, 70);
-        jButton.setFont(new Font("Pixely",Font.BOLD, 15));
-        jButton.setForeground(new Color(255, 255, 255));
-        jButton.setOpaque(false);
-        jButton.setBorderPainted(false);
+    public JogarNovamenteButton(Placar placar, Points points) {
+        super("Jogar Novamente");
+        this.placar = placar;
+        this.points = points;
 
-        jButton.addChangeListener((ChangeListener) this);
+        setBounds(385, 530, 250, 70);
+        setFont(new Font("Pixely", Font.BOLD, 15));
+        setForeground(Color.WHITE);
+        setOpaque(false);
+        setBorderPainted(false);
+        addActionListener(this);
+
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        SwingUtilities.getWindowAncestor(this).dispose();
+        GameSong.stopMusic();
+        try {
             container = new Container();
+            GameSong.playMusic();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
+}

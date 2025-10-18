@@ -26,12 +26,13 @@ public class Enemy1 {
 
         this.largura = enemyImage1.getWidth(null);
         this.altura = enemyImage1.getHeight(null);
+
     }
 
     public void atualizarEstado() {
         this.x -= VELOCIDADE;
-        if (this.x > LARGURA) {
-            //isVisible = false;
+        if (this.x + LARGURA < 0) {
+            setVisible(false);
         }
     }
 
